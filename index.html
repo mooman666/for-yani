@@ -74,7 +74,6 @@
             border: 2px solid var(--gold); border-radius: 25px;
             padding: 30px 20px; width: 100%; margin: 20px 0; position: relative;
         }
-        .prize-card::after { content: '★ ★ ★'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 10px; color: var(--gold); font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -119,17 +118,24 @@
             <h1 style="color:#ff4d4d;">❌ Incorrect</h1>
             <p style="font-weight: 800; font-size: 1.2rem; color: var(--gold);">The Correct Answer is NONE.</p>
             <p>Alcohol causes fights and makes life harder. The only real answer is a clear head and a peaceful night.</p>
-            <button class="btn" onclick="nextLevel('screen-fossils')">I Understand</button>
+            <button class="btn" onclick="nextLevel('screen-grapes')">I Understand</button>
+        </div>
+
+        <div id="screen-grapes" class="screen">
+            <h1>04: Security Check</h1>
+            <p>Got any grapes?</p>
+            <button class="btn btn-outline" onclick="alert('cunt'); nextLevel('screen-fossils')">YES</button>
+            <button class="btn btn-outline" onclick="alert('cunt'); nextLevel('screen-fossils')">NO</button>
         </div>
 
         <div id="screen-fossils" class="screen">
-            <h1>04: The Excavation</h1>
+            <h1>05: The Excavation</h1>
             <p>Dig up the Dragon Eggs from our weekend away.</p>
             <div class="canvas-wrapper"><canvas id="dig-canvas" width="320" height="320"></canvas></div>
         </div>
 
         <div id="screen-memory" class="screen">
-            <h1>05: Encryption</h1>
+            <h1>06: Encryption</h1>
             <p>Match the pairs of what I miss most to unlock the final vault.</p>
             <div class="canvas-wrapper"><div class="memory-grid" id="memory-grid"></div></div>
         </div>
@@ -188,7 +194,6 @@
         }
 
         function startMemoryGame() {
-            // Updated symbols for Yani, the Boys, the Dogs, and a Steak
             const symbols = ['🐕', '👦', '👑', '🥩', '👦', '🐕', '👦', '🐕', '👑', '🥩', '👦', '🐕'];
             const grid = document.getElementById('memory-grid'); grid.innerHTML = '';
             symbols.sort(() => Math.random() - 0.5);
