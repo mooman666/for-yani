@@ -1,106 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>The Long Way Home</title>
+    <meta charset="UTF-8">
+    <title>The Long Road: Yani's Birthday Quest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
-        :root { --gold: #FFD700; --navy: #001f3f; --dark: #050505; }
-        * { box-sizing: border-box; touch-action: manipulation; }
+        :root {
+            --gold: #FFD700;
+            --gold-glow: rgba(255, 215, 0, 0.4);
+            --glass: rgba(255, 255, 255, 0.08);
+            --bg: #0a0a0c;
+            --danger: #ff4d4d;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
         body { 
-            background: var(--dark); color: var(--gold); 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            background: var(--bg); color: #fff; font-family: 'Inter', -apple-system, sans-serif;
             margin: 0; display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; overflow: hidden;
         }
-        .screen { display: none; padding: 30px; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: radial-gradient(circle at center, #111 0%, #000 100%); }
-        
-        h1 { font-size: 1.8rem; letter-spacing: 2px; text-transform: uppercase; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px; }
-        p { font-size: 1.05rem; color: #ccc; line-height: 1.6; max-width: 300px; }
-        
-        .game-container { 
-            width: 85vw; height: 85vw; max-width: 320px; max-height: 320px;
-            border: 2px solid var(--gold); position: relative; border-radius: 10px;
-            background: rgba(255,255,255,0.03); overflow: hidden;
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; }
+        .orb-1 { width: 300px; height: 300px; background: #001f3f; top: -100px; right: -50px; }
+        .orb-2 { width: 250px; height: 250px; background: #221a00; bottom: -50px; left: -50px; }
+
+        .screen { 
+            display: none; width: 90%; height: 85%; max-width: 400px;
+            background: var(--glass); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 30px;
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            animation: fadeIn 0.5s ease-out;
         }
 
-        button { 
-            background: transparent; color: var(--gold); border: 2px solid var(--gold); 
-            padding: 15px 30px; font-size: 1rem; font-weight: bold; width: 85%;
-            margin-top: 20px; transition: all 0.3s;
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        h1 { font-size: 1.5rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        p { font-size: 0.95rem; color: #ccc; line-height: 1.5; margin-bottom: 20px; }
+
+        .game-area { 
+            width: 100%; aspect-ratio: 1/1; border: 1px solid var(--gold-glow);
+            border-radius: 20px; background: rgba(0,0,0,0.4); position: relative; overflow: hidden;
         }
-        button:active { background: var(--gold); color: #000; }
 
-        .option-btn { margin: 8px; width: 90%; text-transform: none; border-color: #444; color: #fff; }
-        
-        /* Memory Game Styles */
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; height: 100%; padding: 10px; }
-        .card { background: var(--navy); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: transparent; border: 1px solid #333; }
-        .card.flipped { color: var(--gold); background: #111; }
+        .btn {
+            background: linear-gradient(145deg, #FFD700, #b8860b); color: #000;
+            border: none; padding: 16px 20px; border-radius: 50px; font-weight: 800;
+            width: 100%; cursor: pointer; transition: 0.3s; margin-top: 10px;
+            text-transform: uppercase; font-size: 0.85rem;
+        }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); margin: 5px 0; }
+        .btn-danger { background: var(--danger); color: white; border: none; }
+        .btn:active { transform: scale(0.96); }
 
-        #sonic { font-size: 50px; position: absolute; top: 40%; left: 0; }
-        canvas { width: 100% !important; height: 100% !important; }
+        #sonic { font-size: 60px; position: absolute; transition: left 0.1s linear; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; height: 100%; padding: 12px; }
+        .card { background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s; }
+        .card.flipped { background: var(--gold); color: #000; }
+
+        /* Uncle Stage specific */
+        #uncle-face { font-size: 80px; margin-bottom: 10px; animation: wobble 2s infinite; }
+        @keyframes wobble { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
     </style>
 </head>
 <body>
 
-    <div id="screen-intro" class="screen">
-        <h1>Birthday Quest</h1>
-        <p>I'm far away right now, and honestly... I miss you, the kids, and even the cats. It's too quiet out here.</p>
-        <p>Complete these challenges to unlock your gift.</p>
-        <button onclick="nextLevel('screen-sonic')">Start the Journey</button>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div id="screen-intro" class="screen" style="display: flex;">
+        <h1>The Long Road</h1>
+        <p>I'm out here working, but I miss you and the crew like crazy. It's too quiet without the kids and the cats.</p>
+        <p>Happy Birthday, Yani. Beat these levels to unlock your prize.</p>
+        <button class="btn" onclick="nextLevel('screen-sonic')">Start Quest</button>
     </div>
 
     <div id="screen-sonic" class="screen">
         <h1>01: The Escape</h1>
-        <p>Keep Sonic in the house! Tap him to reset his run.</p>
-        <div class="game-container" id="area"><div id="sonic" onclick="resetSonic()">🐈</div></div>
-        <h2 id="timer" style="margin-top:15px;">10s</h2>
+        <p>Sonic is trying to bolt. Keep him inside for 10 seconds!</p>
+        <div class="game-area" id="area"><div id="sonic" onclick="resetSonic()">🐈</div></div>
+        <div id="timer" style="color:var(--gold); font-weight:bold; margin-top:10px;">10s</div>
     </div>
 
-    <div id="screen-fossils" class="screen">
-        <h1>02: The Dig</h1>
-        <p>Find those Dragon Eggs from our weekend away. Clear the dirt.</p>
-        <div class="game-container"><canvas id="dig-canvas" width="300" height="300"></canvas></div>
-    </div>
-
-    <div id="screen-gold" class="screen">
-        <h1>03: Market Value</h1>
-        <p>In gold trading, everything has a price floor. What is the floor of our relationship?</p>
-        <button class="option-btn" onclick="nextLevel('screen-alcohol')">A) Priceless (Unlimited Liquidity)</button>
-        <button class="option-btn" onclick="alert('Too technical! Try again.')">B) Spot Price XAU/USD</button>
-        <button class="option-btn" onclick="alert('Incorrect.')">C) $4,715 per ounce</button>
+    <div id="screen-uncle" class="screen">
+        <h1>02: The Greed Sensor</h1>
+        <div id="uncle-face">🤡</div>
+        <p>Warning: Greedy Uncle detected. He's sniffing around for the family money again.</p>
+        <p style="font-style: italic; color: var(--danger);">"Is there an inheritance? What about the estate?!"</p>
+        <button class="btn btn-danger" onclick="alert('Uncle: *Cries in broke*'); nextLevel('screen-alcohol')">Tell him to get a job</button>
+        <button class="btn btn-danger" onclick="alert('Uncle: *Offended*'); nextLevel('screen-alcohol')">Remind him he's not in the will</button>
     </div>
 
     <div id="screen-alcohol" class="screen">
-        <h1>04: The Truth</h1>
-        <p>Final round of drinks. What is the best alcohol?</p>
-        <button class="option-btn" onclick="wrongDrink()">Vodka</button>
-        <button class="option-btn" onclick="wrongDrink()">Beer</button>
-        <button class="option-btn" onclick="wrongDrink()">Wine</button>
-        <button class="option-btn" onclick="wrongDrink()">Bourbon</button>
-        <button class="option-btn" style="border-color:var(--gold)" onclick="nextLevel('screen-memory')">None of the above</button>
+        <h1>03: Social Choice</h1>
+        <p>What is the best drink for a peaceful night?</p>
+        <button class="btn btn-outline" onclick="showLecture()">VODKA</button>
+        <button class="btn btn-outline" onclick="showLecture()">BEER / WINE</button>
+        <button class="btn btn-outline" onclick="showLecture()">BOURBON</button>
+        <button class="btn" onclick="nextLevel('screen-fossils')">WATER (The only right answer)</button>
+    </div>
+
+    <div id="screen-lecture" class="screen">
+        <h1>Correct Answer</h1>
+        <p style="color: var(--gold); font-weight: 800;">NONE.</p>
+        <p>Alcohol causes fights. The only way to a quiet life is a cold water and a clear head.</p>
+        <button class="btn" onclick="nextLevel('screen-fossils')">I Understand</button>
+    </div>
+
+    <div id="screen-fossils" class="screen">
+        <h1>04: Extraction</h1>
+        <p>Dig up those Dragon Eggs from our weekend away.</p>
+        <div class="game-area"><canvas id="dig-canvas" width="300" height="300"></canvas></div>
     </div>
 
     <div id="screen-memory" class="screen">
-        <h1>05: The Vault</h1>
-        <p>Match the pairs of what I miss most to unlock the prize.</p>
-        <div class="game-container"><div class="grid" id="memory-grid"></div></div>
+        <h1>05: Decryption</h1>
+        <p>Match the pairs of what I miss most to unlock the vault.</p>
+        <div class="game-area"><div class="grid" id="memory-grid"></div></div>
     </div>
 
     <div id="screen-final" class="screen">
-        <h1>❤️ Unlocked</h1>
-        <p>I miss you guys. Since I'm not there to cook or take the kids, I'm sending reinforcements.</p>
-        <div style="padding:20px; border: 2px dashed var(--gold); border-radius: 10px;">
-            <h2 style="margin:0;">UBER EATS</h2>
-            <p style="font-size:0.9rem; margin:10px 0;">Check your phone—surprise delivery is on the way.</p>
+        <h1>👑 Unlocked</h1>
+        <p>I miss you Yani. Since I can't be there to take the load off, I'm sending a feast.</p>
+        <div style="padding: 20px; border: 2px dashed var(--gold); border-radius: 20px; background: rgba(0,0,0,0.5); width: 100%;">
+            <h2 style="margin: 0; color: var(--gold);">UBER EATS</h2>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Check your phone—your birthday surprise is on its way.</p>
         </div>
-        <p style="font-style: italic; font-size: 0.8rem; margin-top: 20px;">Blue, Mr Grey, Kitkat, Ed & Sonic are waiting. See you soon.</p>
+        <p style="font-style: italic; font-size: 0.7rem; margin-top: 20px;">Blue, Mr Grey, Kitkat, Ed & Sonic miss you.<br>I'll be home soon. I love you.</p>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => nextLevel('screen-intro'));
-
         let sonicPos = 0, timeLeft = 10;
+
         function nextLevel(id) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
@@ -109,26 +141,24 @@
             if(id === 'screen-memory') startMemoryGame();
         }
 
-        function wrongDrink() {
-            alert("The correct answer is NO ALCOHOL. Alcohol causes fights. Try again.");
-        }
-
+        function showLecture() { nextLevel('screen-lecture'); }
         function resetSonic() { sonicPos = 0; }
+
         function startSonicGame() {
             const sonic = document.getElementById('sonic'), area = document.getElementById('area');
             const interval = setInterval(() => {
-                sonicPos += 14; sonic.style.left = sonicPos + 'px';
-                if (sonicPos > (area.clientWidth - 50)) { sonicPos = 0; timeLeft = 10; alert("Sonic escaped!"); }
+                sonicPos += 15; sonic.style.left = sonicPos + 'px';
+                if (sonicPos > (area.clientWidth - 60)) { sonicPos = 0; timeLeft = 10; alert("Sonic escaped!"); }
             }, 100);
             const timerInt = setInterval(() => {
                 timeLeft--; document.getElementById('timer').innerText = timeLeft + "s";
-                if(timeLeft <= 0) { clearInterval(interval); clearInterval(timerInt); nextLevel('screen-fossils'); }
+                if(timeLeft <= 0) { clearInterval(interval); clearInterval(timerInt); nextLevel('screen-uncle'); }
             }, 1000);
         }
 
         function startFossilDig() {
             const canvas = document.getElementById('dig-canvas'), ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#3d2b1f'; ctx.fillRect(0, 0, 300, 300);
+            ctx.fillStyle = '#221a00'; ctx.fillRect(0, 0, 300, 300);
             ctx.globalCompositeOperation = 'destination-out';
             let count = 0;
             const dig = (e) => {
@@ -136,38 +166,25 @@
                 const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
                 const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
                 ctx.beginPath(); ctx.arc(x * (300/rect.width), y * (300/rect.height), 30, 0, Math.PI * 2); ctx.fill();
-                count++; if(count > 100) nextLevel('screen-gold');
+                count++; if(count > 100) nextLevel('screen-memory');
             };
             canvas.addEventListener('touchmove', dig);
         }
 
         function startMemoryGame() {
             const symbols = ['🐈', '👦', '👧', '🐉', '🐈', '👦', '👧', '🐉', '👑', '🍔', '👑', '🍔'];
-            const grid = document.getElementById('memory-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('memory-grid'); grid.innerHTML = '';
             symbols.sort(() => Math.random() - 0.5);
-            let flipped = [];
-            let matched = 0;
-
-            symbols.forEach((sym, i) => {
+            let flipped = [], matched = 0;
+            symbols.forEach((sym) => {
                 const card = document.createElement('div');
                 card.classList.add('card');
-                card.dataset.sym = sym;
                 card.onclick = () => {
                     if(flipped.length < 2 && !card.classList.contains('flipped')) {
-                        card.classList.add('flipped');
-                        card.innerText = sym;
-                        flipped.push(card);
+                        card.classList.add('flipped'); card.innerText = sym; flipped.push(card);
                         if(flipped.length === 2) {
-                            if(flipped[0].dataset.sym === flipped[1].dataset.sym) {
-                                matched += 2; flipped = [];
-                                if(matched === symbols.length) setTimeout(() => nextLevel('screen-final'), 800);
-                            } else {
-                                setTimeout(() => {
-                                    flipped.forEach(c => { c.classList.remove('flipped'); c.innerText = ''; });
-                                    flipped = [];
-                                }, 800);
-                            }
+                            if(flipped[0].innerText === flipped[1].innerText) { matched += 2; flipped = []; if(matched === symbols.length) setTimeout(() => nextLevel('screen-final'), 800); }
+                            else { setTimeout(() => { flipped.forEach(c => { c.classList.remove('flipped'); c.innerText = ''; }); flipped = []; }, 700); }
                         }
                     }
                 };
