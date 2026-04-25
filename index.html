@@ -46,7 +46,7 @@
 
         .canvas-wrapper { 
             width: 100%; aspect-ratio: 1/1; border: 1px solid var(--border);
-            border-radius: 25px; background: rgba(0,0,0,0.4); position: relative; overflow: hidden;
+            border-radius: 25px; background: rgba(0,0,0,0.6); position: relative; overflow: hidden;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
@@ -54,26 +54,27 @@
             background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000;
             border: none; padding: 18px; border-radius: 18px; font-weight: 800;
             width: 100%; cursor: pointer; transition: 0.3s; margin-top: 10px;
-            text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            text-transform: uppercase; letter-spacing: 1.5px;
         }
         .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold); margin: 6px 0; }
-        .btn:active { transform: scale(0.95); filter: brightness(0.8); }
-
-        #sonic { font-size: 65px; position: absolute; transition: left 0.12s linear; }
+        
+        #grey-cat { 
+            font-size: 55px; position: absolute; cursor: pointer;
+            padding: 10px; z-index: 10;
+        }
 
         .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; height: 100%; padding: 15px; }
         .card { 
             background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; 
-            align-items: center; justify-content: center; font-size: 1.5rem; 
-            transition: 0.4s; border: 1px solid rgba(255,255,255,0.1);
+            align-items: center; justify-content: center; font-size: 1.5rem; transition: 0.4s;
         }
         .card.flipped { background: var(--gold); color: #000; transform: rotateY(180deg); }
 
         .prize-card {
-            background: linear-gradient(145deg, #111, #000);
-            border: 2px solid var(--gold); border-radius: 25px;
-            padding: 30px 20px; width: 100%; margin: 20px 0; position: relative;
+            background: rgba(0,0,0,0.8); border: 2px solid var(--gold); border-radius: 25px;
+            padding: 30px 20px; width: 100%; margin: 20px 0;
         }
+        .secret-code { font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 5px; margin: 10px 0; display: block; }
     </style>
 </head>
 <body>
@@ -86,21 +87,23 @@
         <div id="screen-intro" class="screen" style="display: flex;">
             <h1>Birthday Quest</h1>
             <p>I'm out here in the quiet, missing the beautiful chaos of you, the kids, and even the mutt.</p>
-            <p>I built this to bring us a little closer today. Unlock your birthday surprise.</p>
-            <button class="btn" onclick="nextLevel('screen-sonic')">Begin Mission</button>
+            <p>Complete the mission to claim your birthday prize.</p>
+            <button class="btn" onclick="nextLevel('screen-sonic')">Start</button>
         </div>
 
         <div id="screen-sonic" class="screen">
-            <h1>01: The Escape</h1>
-            <p>Sonic is bolting again. Keep the runner inside for 12 seconds!</p>
-            <div class="canvas-wrapper" id="area"><div id="sonic" onclick="resetSonic()">🐕</div></div>
-            <div id="timer" style="color:var(--gold); font-size:1.5rem; margin-top:15px; font-weight:800;">12s</div>
+            <h1>01: Catch the Cat</h1>
+            <p>Mr Grey is on a tear! Catch him 5 times before he escapes.</p>
+            <div class="canvas-wrapper" id="area">
+                <div id="grey-cat" onclick="hitCat()">🐈‍⬛</div>
+            </div>
+            <div id="cat-score" style="color:var(--gold); font-size:1.5rem; margin-top:15px; font-weight:800;">Hits: 0 / 5</div>
         </div>
 
         <div id="screen-uncle" class="screen">
-            <div style="font-size: 80px; margin-bottom: 10px; animation: bounce 2s infinite;">🤡</div>
+            <div style="font-size: 80px; margin-bottom: 10px;">🤡</div>
             <h1>02: The Greed Sensor</h1>
-            <p>Greedy Uncle detected. He's asking about the estate and inheritance again.</p>
+            <p>Greedy Uncle detected. He's asking about the inheritance again.</p>
             <button class="btn" style="background:#ff4d4d; color:#fff;" onclick="alert('Uncle: *Crying because he is broke*'); nextLevel('screen-alcohol')">Tell him to get a job</button>
             <button class="btn" style="background:#ff4d4d; color:#fff;" onclick="alert('Uncle: *Realises he is not in the will*'); nextLevel('screen-alcohol')">Remind him he gets $0</button>
         </div>
@@ -117,7 +120,7 @@
         <div id="screen-lecture" class="screen">
             <h1 style="color:#ff4d4d;">❌ Incorrect</h1>
             <p style="font-weight: 800; font-size: 1.2rem; color: var(--gold);">The Correct Answer is NONE.</p>
-            <p>Alcohol causes fights and makes life harder. The only real answer is a clear head and a peaceful night.</p>
+            <p>Alcohol causes fights. The only real answer is a clear head.</p>
             <button class="btn" onclick="nextLevel('screen-grapes')">I Understand</button>
         </div>
 
@@ -129,53 +132,63 @@
         </div>
 
         <div id="screen-fossils" class="screen">
-            <h1>05: The Excavation</h1>
+            <h1>05: Extraction</h1>
             <p>Dig up the Dragon Eggs from our weekend away.</p>
             <div class="canvas-wrapper"><canvas id="dig-canvas" width="320" height="320"></canvas></div>
         </div>
 
         <div id="screen-memory" class="screen">
             <h1>06: Encryption</h1>
-            <p>Match the pairs of what I miss most to unlock the final vault.</p>
+            <p>Match the pairs to unlock the final vault.</p>
             <div class="canvas-wrapper"><div class="memory-grid" id="memory-grid"></div></div>
         </div>
 
         <div id="screen-final" class="screen">
             <h1>👑 Quest Complete</h1>
-            <p>I miss you, Yani. I miss the kids and I even miss the mutt.</p>
+            <p>I miss you Yani. I miss the kids and I even miss the mutt.</p>
             <div class="prize-card">
-                <h2 style="margin: 0; color: var(--gold); letter-spacing: 5px;">UBER EATS</h2>
-                <p style="font-size: 0.9rem; margin: 15px 0 0;">Check your phone—a birthday feast is currently being prepared for you.</p>
+                <p style="margin:0; font-size: 0.8rem; text-transform: uppercase;">Text the Secret Code to Ryan now:</p>
+                <span class="secret-code">"GRAPES"</span>
+                <p style="font-size: 0.9rem; margin-top: 10px; color: var(--gold);">To claim your Uber Eats feast.</p>
             </div>
-            <p style="font-size: 1.1rem; margin-top: 20px; color: var(--gold); font-weight: bold;">Happy Birthday. I love you.</p>
+            <p style="font-size: 1.1rem; color: var(--gold); font-weight: bold;">Happy Birthday. I love you.</p>
         </div>
 
     </div>
 
     <script>
-        let sonicPos = 0, timeLeft = 12;
+        let hits = 0;
+        let catX = 50, catY = 50, dx = 4, dy = 4;
 
         function nextLevel(id) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
-            if(id === 'screen-sonic') startSonicGame();
+            if(id === 'screen-sonic') startCatGame();
             if(id === 'screen-fossils') startFossilDig();
             if(id === 'screen-memory') startMemoryGame();
         }
 
         function showLecture() { nextLevel('screen-lecture'); }
-        function resetSonic() { sonicPos = 0; }
 
-        function startSonicGame() {
-            const sonic = document.getElementById('sonic'), area = document.getElementById('area');
-            const interval = setInterval(() => {
-                sonicPos += 16; sonic.style.left = sonicPos + 'px';
-                if (sonicPos > (area.clientWidth - 65)) { sonicPos = 0; timeLeft = 12; alert("Sonic escaped!"); }
-            }, 100);
-            const timerInt = setInterval(() => {
-                timeLeft--; document.getElementById('timer').innerText = timeLeft + "s";
-                if(timeLeft <= 0) { clearInterval(interval); clearInterval(timerInt); nextLevel('screen-uncle'); }
-            }, 1000);
+        function startCatGame() {
+            const cat = document.getElementById('grey-cat');
+            const area = document.getElementById('area');
+            const move = () => {
+                catX += dx; catY += dy;
+                if(catX <= 0 || catX >= area.clientWidth - 60) dx *= -1;
+                if(catY <= 0 || catY >= area.clientHeight - 60) dy *= -1;
+                cat.style.left = catX + 'px';
+                cat.style.top = catY + 'px';
+                if(hits < 5) requestAnimationFrame(move);
+            };
+            move();
+        }
+
+        function hitCat() {
+            hits++;
+            document.getElementById('cat-score').innerText = `Hits: ${hits} / 5`;
+            dx *= 1.2; dy *= 1.2; // Speed up
+            if(hits >= 5) nextLevel('screen-uncle');
         }
 
         function startFossilDig() {
