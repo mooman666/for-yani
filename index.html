@@ -35,46 +35,37 @@
         .screen { 
             display: none; width: 100%; height: 100%; 
             flex-direction: column; align-items: center; justify-content: center;
-            padding: 35px; text-align: center;
+            padding: 30px; text-align: center;
             animation: screenIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         @keyframes screenIn { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        h1 { font-size: 1.6rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin: 0 0 15px; text-shadow: 0 0 15px rgba(255,215,0,0.3); }
-        p { font-size: 1rem; color: #d1d1d1; line-height: 1.6; margin-bottom: 25px; font-weight: 300; }
+        h1 { font-size: 1.4rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin: 0 0 15px; }
+        p { font-size: 0.95rem; color: #d1d1d1; line-height: 1.5; margin-bottom: 20px; }
 
         .canvas-wrapper { 
             width: 100%; aspect-ratio: 1/1; border: 1px solid var(--border);
             border-radius: 25px; background: rgba(0,0,0,0.6); position: relative; overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
         .btn {
             background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000;
-            border: none; padding: 18px; border-radius: 18px; font-weight: 800;
+            border: none; padding: 16px; border-radius: 18px; font-weight: 800;
             width: 100%; cursor: pointer; transition: 0.3s; margin-top: 10px;
-            text-transform: uppercase; letter-spacing: 1.5px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
         .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold); margin: 6px 0; }
         
-        #grey-cat { 
-            font-size: 55px; position: absolute; cursor: pointer;
-            padding: 10px; z-index: 10;
-        }
+        #grey-cat { font-size: 50px; position: absolute; z-index: 10; }
+        #gold-bar { font-size: 60px; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); transition: top 0.5s linear; }
 
-        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; height: 100%; padding: 15px; }
-        .card { 
-            background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; 
-            align-items: center; justify-content: center; font-size: 1.5rem; transition: 0.4s;
-        }
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; height: 100%; padding: 10px; }
+        .card { background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: 0.4s; }
         .card.flipped { background: var(--gold); color: #000; transform: rotateY(180deg); }
 
-        .prize-card {
-            background: rgba(0,0,0,0.8); border: 2px solid var(--gold); border-radius: 25px;
-            padding: 30px 20px; width: 100%; margin: 20px 0;
-        }
-        .secret-code { font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 5px; margin: 10px 0; display: block; }
+        .prize-card { background: rgba(0,0,0,0.8); border: 2px solid var(--gold); border-radius: 25px; padding: 25px 15px; width: 100%; margin: 15px 0; }
+        .secret-code { font-size: 1.6rem; font-weight: 900; color: #fff; letter-spacing: 4px; margin: 10px 0; display: block; }
     </style>
 </head>
 <body>
@@ -87,29 +78,33 @@
         <div id="screen-intro" class="screen" style="display: flex;">
             <h1>Birthday Quest</h1>
             <p>I'm out here in the quiet, missing the beautiful chaos of you, the kids, and even the mutt.</p>
-            <p>Complete the mission to claim your birthday prize.</p>
-            <button class="btn" onclick="nextLevel('screen-sonic')">Start</button>
+            <button class="btn" onclick="nextLevel('screen-cat')">Start Mission</button>
         </div>
 
-        <div id="screen-sonic" class="screen">
+        <div id="screen-cat" class="screen">
             <h1>01: Catch the Cat</h1>
-            <p>Mr Grey is on a tear! Catch him 5 times before he escapes.</p>
-            <div class="canvas-wrapper" id="area">
-                <div id="grey-cat" onclick="hitCat()">🐈‍⬛</div>
-            </div>
-            <div id="cat-score" style="color:var(--gold); font-size:1.5rem; margin-top:15px; font-weight:800;">Hits: 0 / 5</div>
+            <p>Mr Grey is on a tear! Catch him 5 times.</p>
+            <div class="canvas-wrapper" id="area"><div id="grey-cat" onclick="hitCat()">🐈‍⬛</div></div>
+            <div id="cat-score" style="color:var(--gold); font-size:1.2rem; margin-top:10px; font-weight:800;">Hits: 0 / 5</div>
+        </div>
+
+        <div id="screen-gold-game" class="screen">
+            <h1>02: Market Timing</h1>
+            <p>Gold is dropping! Tap the bar to "Buy the Dip" before it hits the floor!</p>
+            <div class="canvas-wrapper" id="gold-area"><div id="gold-bar" onclick="buyDip()">💰</div></div>
+            <div id="gold-status" style="color:var(--gold); margin-top:10px; font-weight:bold;">Status: Waiting...</div>
         </div>
 
         <div id="screen-uncle" class="screen">
-            <div style="font-size: 80px; margin-bottom: 10px;">🤡</div>
-            <h1>02: The Greed Sensor</h1>
+            <div style="font-size: 70px; margin-bottom: 10px;">🤡</div>
+            <h1>03: Greed Sensor</h1>
             <p>Greedy Uncle detected. He's asking about the inheritance again.</p>
             <button class="btn" style="background:#ff4d4d; color:#fff;" onclick="alert('Uncle: *Crying because he is broke*'); nextLevel('screen-alcohol')">Tell him to get a job</button>
             <button class="btn" style="background:#ff4d4d; color:#fff;" onclick="alert('Uncle: *Realises he is not in the will*'); nextLevel('screen-alcohol')">Remind him he gets $0</button>
         </div>
 
         <div id="screen-alcohol" class="screen">
-            <h1>03: Nightcap</h1>
+            <h1>04: Nightcap</h1>
             <p>What's the best drink to settle in with?</p>
             <button class="btn btn-outline" onclick="showLecture()">VODKA</button>
             <button class="btn btn-outline" onclick="showLecture()">BEER / WINE</button>
@@ -119,27 +114,26 @@
 
         <div id="screen-lecture" class="screen">
             <h1 style="color:#ff4d4d;">❌ Incorrect</h1>
-            <p style="font-weight: 800; font-size: 1.2rem; color: var(--gold);">The Correct Answer is NONE.</p>
             <p>Alcohol causes fights. The only real answer is a clear head.</p>
             <button class="btn" onclick="nextLevel('screen-grapes')">I Understand</button>
         </div>
 
         <div id="screen-grapes" class="screen">
-            <h1>04: Security Check</h1>
+            <h1>05: Security Check</h1>
             <p>Got any grapes?</p>
             <button class="btn btn-outline" onclick="alert('cunt'); nextLevel('screen-fossils')">YES</button>
             <button class="btn btn-outline" onclick="alert('cunt'); nextLevel('screen-fossils')">NO</button>
         </div>
 
         <div id="screen-fossils" class="screen">
-            <h1>05: Extraction</h1>
+            <h1>06: Extraction</h1>
             <p>Dig up the Dragon Eggs from our weekend away.</p>
             <div class="canvas-wrapper"><canvas id="dig-canvas" width="320" height="320"></canvas></div>
         </div>
 
         <div id="screen-memory" class="screen">
-            <h1>06: Encryption</h1>
-            <p>Match the pairs to unlock the final vault.</p>
+            <h1>07: Encryption</h1>
+            <p>Match the things I miss the most to unlock the vault.</p>
             <div class="canvas-wrapper"><div class="memory-grid" id="memory-grid"></div></div>
         </div>
 
@@ -147,9 +141,9 @@
             <h1>👑 Quest Complete</h1>
             <p>I miss you Yani. I miss the kids and I even miss the mutt.</p>
             <div class="prize-card">
-                <p style="margin:0; font-size: 0.8rem; text-transform: uppercase;">Text the Secret Code to Ryan now:</p>
+                <p style="margin:0; font-size: 0.7rem; text-transform: uppercase;">Text the Secret Code to Ryan now:</p>
                 <span class="secret-code">"GRAPES"</span>
-                <p style="font-size: 0.9rem; margin-top: 10px; color: var(--gold);">To claim your Uber Eats feast.</p>
+                <p style="font-size: 0.85rem; margin-top: 5px; color: var(--gold);">To claim your Uber Eats feast.</p>
             </div>
             <p style="font-size: 1.1rem; color: var(--gold); font-weight: bold;">Happy Birthday. I love you.</p>
         </div>
@@ -163,7 +157,8 @@
         function nextLevel(id) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
-            if(id === 'screen-sonic') startCatGame();
+            if(id === 'screen-cat') startCatGame();
+            if(id === 'screen-gold-game') spawnGold();
             if(id === 'screen-fossils') startFossilDig();
             if(id === 'screen-memory') startMemoryGame();
         }
@@ -171,25 +166,33 @@
         function showLecture() { nextLevel('screen-lecture'); }
 
         function startCatGame() {
-            const cat = document.getElementById('grey-cat');
-            const area = document.getElementById('area');
+            const cat = document.getElementById('grey-cat'), area = document.getElementById('area');
             const move = () => {
                 catX += dx; catY += dy;
-                if(catX <= 0 || catX >= area.clientWidth - 60) dx *= -1;
-                if(catY <= 0 || catY >= area.clientHeight - 60) dy *= -1;
-                cat.style.left = catX + 'px';
-                cat.style.top = catY + 'px';
+                if(catX <= 0 || catX >= area.clientWidth - 55) dx *= -1;
+                if(catY <= 0 || catY >= area.clientHeight - 55) dy *= -1;
+                cat.style.left = catX + 'px'; cat.style.top = catY + 'px';
                 if(hits < 5) requestAnimationFrame(move);
             };
             move();
         }
+        function hitCat() { hits++; document.getElementById('cat-score').innerText = `Hits: ${hits} / 5`; dx *= 1.2; dy *= 1.2; if(hits >= 5) nextLevel('screen-gold-game'); }
 
-        function hitCat() {
-            hits++;
-            document.getElementById('cat-score').innerText = `Hits: ${hits} / 5`;
-            dx *= 1.2; dy *= 1.2; // Speed up
-            if(hits >= 5) nextLevel('screen-uncle');
+        function spawnGold() {
+            const bar = document.getElementById('gold-bar');
+            bar.style.top = "-100px";
+            setTimeout(() => {
+                bar.style.transition = "top 2s linear";
+                bar.style.top = "350px";
+                setTimeout(() => {
+                    if(document.getElementById('screen-gold-game').style.display === 'flex') {
+                        document.getElementById('gold-status').innerText = "Status: Paper Hands! Resetting...";
+                        spawnGold();
+                    }
+                }, 2000);
+            }, 1000);
         }
+        function buyDip() { document.getElementById('gold-status').innerText = "Status: LIQUIDITY SECURED!"; setTimeout(() => nextLevel('screen-uncle'), 800); }
 
         function startFossilDig() {
             const canvas = document.getElementById('dig-canvas'), ctx = canvas.getContext('2d');
