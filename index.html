@@ -1,169 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Yanis's Birthday Adventure</title>
+    <title>Yanis's Birthday Quest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
-        /* Mobile Reset & Layout */
         * { box-sizing: border-box; touch-action: manipulation; }
         body { 
-            background: linear-gradient(135deg, #001f3f 0%, #000b1a 100%); 
-            color: #FFD700; font-family: sans-serif; 
-            margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #001f3f 0%, #000 100%); 
+            color: #FFD700; font-family: 'Georgia', serif; 
+            margin: 0; display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; overflow: hidden;
         }
-
-        .screen { 
-            display: none; padding: 20px; width: 100%; height: 100%; 
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
-        }
-
-        h1 { font-size: 2.2rem; margin: 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        p { font-size: 1.1rem; color: #fff; margin-bottom: 20px; padding: 0 10px; }
-
-        /* Responsive Game Areas */
+        .screen { display: none; padding: 20px; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        h1 { font-size: 2rem; color: #FFD700; text-shadow: 0 0 10px #FFD700; margin-bottom: 5px; }
+        p { font-size: 1rem; color: #fff; margin-bottom: 15px; line-height: 1.4; }
+        
         .game-container { 
-            width: 85vw; height: 85vw; max-width: 320px; max-height: 320px;
-            border: 4px solid #FFD700; position: relative; border-radius: 20px;
-            background: rgba(255,255,255,0.05); overflow: hidden;
+            width: 80vw; height: 80vw; max-width: 300px; max-height: 300px;
+            border: 3px solid #FFD700; position: relative; border-radius: 15px;
+            background: rgba(255,215,0,0.05); overflow: hidden; box-shadow: 0 0 20px rgba(255,215,0,0.2);
         }
 
         button { 
-            background: #FFD700; color: #001f3f; border: none; padding: 18px 40px; 
-            font-size: 1.3rem; border-radius: 50px; font-weight: bold; width: 80%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(#FFD700, #b8860b); color: #000; border: none; 
+            padding: 15px 30px; font-size: 1.1rem; border-radius: 50px; font-weight: bold; width: 80%;
+            margin-top: 15px; box-shadow: 0 4px #555;
         }
+        button:active { transform: translateY(2px); box-shadow: 0 2px #555; }
 
-        #sonic { font-size: 60px; position: absolute; top: 35%; left: 0; z-index: 10; }
-        canvas { width: 100% !important; height: 100% !important; touch-action: none; }
-
-        /* Reward Vouchers */
-        .voucher { 
-            background: #fff; color: #333; padding: 15px; border-radius: 10px; 
-            margin: 8px 0; width: 90%; font-weight: bold; border-left: 8px solid #FFD700; text-align: left;
-        }
+        .quiz-btn { background: #111; color: #FFD700; border: 1px solid #FFD700; margin: 5px; width: 90%; }
+        #sonic { font-size: 50px; position: absolute; top: 35%; left: 0; }
+        canvas { width: 100% !important; height: 100% !important; }
+        
+        .prize-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; border: 1px solid #FFD700; text-align: left; width: 95%; }
+        .voucher { color: #FFD700; font-weight: bold; margin: 10px 0; display: block; border-bottom: 1px solid #333; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div id="screen-intro" class="screen">
-        <h1>👑 For Yani</h1>
-        <p>A little birthday escape from the chaos.<br>I've always got your back.</p>
-        <button onclick="nextLevel('screen-sonic')">Start Adventure</button>
+        <h1>👑 The Yani Quest</h1>
+        <p>From the BP Queen night to right now.<br>I might be far away, but I've got a gift for you to unlock.</p>
+        <button onclick="nextLevel('screen-sonic')">Begin the Journey</button>
     </div>
 
     <div id="screen-sonic" class="screen">
         <h1>Level 1: Sonic!</h1>
-        <p>Tap Sonic to keep him inside!<br>Don't let him escape the box.</p>
-        <div class="game-container" id="area">
-            <div id="sonic" onclick="resetSonic()">🐈</div>
-        </div>
-        <h2 id="timer">Stay in: 10s</h2>
+        <p>You know he's a runner. Keep him in the house for 10 seconds!</p>
+        <div class="game-container" id="area"><div id="sonic" onclick="resetSonic()">🐈</div></div>
+        <h2 id="timer">10s</h2>
     </div>
 
     <div id="screen-fossils" class="screen">
         <h1>Level 2: Treasures</h1>
-        <p>Rub the screen to find the<br>Dragon Eggs from our weekend away!</p>
-        <div class="game-container">
-            <canvas id="dig-canvas" width="400" height="400"></canvas>
-        </div>
-        <p>Digging...</p>
+        <p>Dig up the Dragon Eggs from our weekend away!</p>
+        <div class="game-container"><canvas id="dig-canvas" width="300" height="300"></canvas></div>
     </div>
 
-    <div id="screen-final" class="screen">
-        <h1>❤️ You Win!</h1>
-        <div class="voucher">🎫 Night off from kid showers</div>
-        <div class="voucher">🎫 Teeth brushing duty: DONE</div>
-        <div class="voucher">🎫 Cold drink & Murder Doco</div>
-        <div class="voucher">🎫 1x "Quiet House" pass</div>
-        <p style="margin-top:20px; font-style: italic;">Happy Birthday, Yani!</p>
+    <div id="screen-gold" class="screen">
+        <h1>Level 3: The Market</h1>
+        <p>I spend a lot of time watching the XAU/USD charts... but what's the ultimate "Price Floor" of our relationship?</p>
+        <button class="quiz-btn" onclick="nextLevel('screen-supercoach')">A) Priceless</button>
+        <button class="quiz-btn" onclick="alert('Wrong! I am a gold bug, but you are the real asset.')">B) $4,715 per ounce</button>
+        <button class="quiz-btn" onclick="alert('Close, but no!')">C) Liquid Gold</button>
+    </div>
+
+    <div id="screen-supercoach" class="screen">
+        <h1>Level 4: Team Selection</h1>
+        <p>If you had to pick one AFL legend to join our family team, who is the "Captain"?</p>
+        <button class="quiz-btn" onclick="nextLevel('screen-final')">A) Me (The Developer)</button>
+        <button class="quiz-btn" onclick="nextLevel('screen-final')">B) You (The Queen)</button>
+        <button class="quiz-btn" onclick="nextLevel('screen-final')">C) Sonic (The Runner)</button>
+    </div>
+
+    <div id="screen-final" class="screen" style="overflow-y: auto;">
+        <h1>❤️ Happy Birthday!</h1>
+        <p>Since I can't be there to hug you, here is your digital loot box:</p>
+        <div class="prize-box">
+            <span class="voucher">🎁 1x Uber Eats Surprise (Check your phone!)</span>
+            <span class="voucher">🎁 1x Long Distance "No-Chores" Promise</span>
+            <span class="voucher">🎁 1x Murder Doco Night (I'll watch it with you on Discord/FaceTime)</span>
+            <span class="voucher">🎁 1x 'Mr Grey' Hug (Redeemable when I'm home)</span>
+        </div>
+        <p style="margin-top:20px; font-style: italic;">Blue, Kitkat, Ed & the kids miss you.<br>I love you Yani.</p>
     </div>
 
     <script>
-        // Start the app as soon as the page loads
-        document.addEventListener("DOMContentLoaded", function() {
-            nextLevel('screen-intro');
-        });
+        document.addEventListener("DOMContentLoaded", () => nextLevel('screen-intro'));
 
-        let sonicPos = 0;
-        let timeLeft = 10;
-        let gameActive = false;
-
+        let sonicPos = 0, timeLeft = 10;
         function nextLevel(id) {
-            // Hide all screens
-            const screens = document.querySelectorAll('.screen');
-            screens.forEach(s => s.style.display = 'none');
-            
-            // Show the target screen
-            const target = document.getElementById(id);
-            target.style.display = 'flex';
-            
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'flex';
             if(id === 'screen-sonic') startSonicGame();
             if(id === 'screen-fossils') startFossilDig();
         }
 
-        function resetSonic() { 
-            sonicPos = 0; 
-        }
-
+        function resetSonic() { sonicPos = 0; }
         function startSonicGame() {
-            const sonic = document.getElementById('sonic');
-            const area = document.getElementById('area');
-            
+            const sonic = document.getElementById('sonic'), area = document.getElementById('area');
             const interval = setInterval(() => {
-                const limit = area.clientWidth - 70;
-                sonicPos += 10; 
-                sonic.style.left = sonicPos + 'px';
-                
-                if (sonicPos > limit) { 
-                    sonicPos = 0; 
-                    timeLeft = 10; 
-                    alert("Sonic escaped! Get him back in the house!"); 
-                }
+                sonicPos += 12; sonic.style.left = sonicPos + 'px';
+                if (sonicPos > (area.clientWidth - 60)) { sonicPos = 0; timeLeft = 10; alert("Sonic escaped!"); }
             }, 100);
-
             const timerInt = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').innerText = "Stay in: " + timeLeft + "s";
-                if(timeLeft <= 0) {
-                    clearInterval(interval);
-                    clearInterval(timerInt);
-                    nextLevel('screen-fossils');
-                }
+                timeLeft--; document.getElementById('timer').innerText = timeLeft + "s";
+                if(timeLeft <= 0) { clearInterval(interval); clearInterval(timerInt); nextLevel('screen-fossils'); }
             }, 1000);
         }
 
         function startFossilDig() {
-            const canvas = document.getElementById('dig-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Fill with brown "dirt"
-            ctx.fillStyle = '#5d4037';
-            ctx.fillRect(0, 0, 400, 400);
-            
-            // Set up the "erasing" effect
+            const canvas = document.getElementById('dig-canvas'), ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#5d4037'; ctx.fillRect(0, 0, 300, 300);
             ctx.globalCompositeOperation = 'destination-out';
-
             let count = 0;
             const dig = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
                 const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-                
-                ctx.beginPath();
-                // Scale coordinates for the canvas size
-                ctx.arc(x * (400/rect.width), y * (400/rect.height), 35, 0, Math.PI * 2);
-                ctx.fill();
-                
-                count++;
-                if(count > 80) {
-                    canvas.removeEventListener('touchmove', dig);
-                    setTimeout(() => nextLevel('screen-final'), 500);
-                }
+                ctx.beginPath(); ctx.arc(x * (300/rect.width), y * (300/rect.height), 35, 0, Math.PI * 2); ctx.fill();
+                count++; if(count > 80) nextLevel('screen-gold');
             };
-            
             canvas.addEventListener('touchmove', dig);
-            canvas.addEventListener('mousemove', dig);
         }
     </script>
 </body>
