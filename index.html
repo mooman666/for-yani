@@ -2,136 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The Long Road: Yani's Birthday Quest</title>
+    <title>The Long Way Home | Birthday Quest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         :root {
             --gold: #FFD700;
-            --gold-glow: rgba(255, 215, 0, 0.4);
-            --glass: rgba(255, 255, 255, 0.08);
-            --bg: #0a0a0c;
-            --danger: #ff4d4d;
+            --gold-dark: #b8860b;
+            --bg: #050507;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 215, 0, 0.2);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
         body { 
-            background: var(--bg); color: #fff; font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg); color: #fff; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
             margin: 0; display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; overflow: hidden;
         }
 
-        .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; }
-        .orb-1 { width: 300px; height: 300px; background: #001f3f; top: -100px; right: -50px; }
-        .orb-2 { width: 250px; height: 250px; background: #221a00; bottom: -50px; left: -50px; }
+        /* High-End Background */
+        .ambient-light { position: fixed; width: 400px; height: 400px; background: radial-gradient(circle, #001f3f 0%, transparent 70%); top: -10%; right: -10%; filter: blur(60px); z-index: -1; opacity: 0.6; }
+        .ambient-light-2 { position: fixed; width: 300px; height: 300px; background: radial-gradient(circle, #221a00 0%, transparent 70%); bottom: -5%; left: -5%; filter: blur(60px); z-index: -1; opacity: 0.4; }
 
-        .screen { 
-            display: none; width: 90%; height: 85%; max-width: 400px;
-            background: var(--glass); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 30px;
-            flex-direction: column; align-items: center; justify-content: center;
-            padding: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            animation: fadeIn 0.5s ease-out;
+        .app-container {
+            width: 92%; height: 88%; max-width: 420px;
+            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border); border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .screen { 
+            display: none; width: 100%; height: 100%; 
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 35px; text-align: center;
+            animation: screenIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
-        h1 { font-size: 1.5rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
-        p { font-size: 0.95rem; color: #ccc; line-height: 1.5; margin-bottom: 20px; }
+        @keyframes screenIn { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .game-area { 
-            width: 100%; aspect-ratio: 1/1; border: 1px solid var(--gold-glow);
-            border-radius: 20px; background: rgba(0,0,0,0.4); position: relative; overflow: hidden;
+        h1 { font-size: 1.6rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin: 0 0 15px; text-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        p { font-size: 1rem; color: #d1d1d1; line-height: 1.6; margin-bottom: 25px; font-weight: 300; }
+
+        /* Game Mechanics */
+        .canvas-wrapper { 
+            width: 100%; aspect-ratio: 1/1; border: 1px solid var(--border);
+            border-radius: 25px; background: rgba(0,0,0,0.4); position: relative; overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
         .btn {
-            background: linear-gradient(145deg, #FFD700, #b8860b); color: #000;
-            border: none; padding: 16px 20px; border-radius: 50px; font-weight: 800;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000;
+            border: none; padding: 18px; border-radius: 18px; font-weight: 800;
             width: 100%; cursor: pointer; transition: 0.3s; margin-top: 10px;
-            text-transform: uppercase; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 15px rgba(0,0,0,0.2);
         }
-        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); margin: 5px 0; }
-        .btn-danger { background: var(--danger); color: white; border: none; }
-        .btn:active { transform: scale(0.96); }
+        .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold); margin: 6px 0; }
+        .btn:active { transform: scale(0.95); filter: brightness(0.8); }
 
-        #sonic { font-size: 60px; position: absolute; transition: left 0.1s linear; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; height: 100%; padding: 12px; }
-        .card { background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s; }
-        .card.flipped { background: var(--gold); color: #000; }
+        /* Sonic Styling */
+        #sonic { font-size: 65px; position: absolute; transition: left 0.12s linear; drop-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 
-        /* Uncle Stage specific */
-        #uncle-face { font-size: 80px; margin-bottom: 10px; animation: wobble 2s infinite; }
-        @keyframes wobble { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+        /* Memory Puzzle */
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; height: 100%; padding: 15px; }
+        .card { 
+            background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; 
+            align-items: center; justify-content: center; font-size: 1.5rem; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card.flipped { background: var(--gold); color: #000; transform: rotateY(180deg); }
+
+        /* Prize Card */
+        .prize-card {
+            background: linear-gradient(145deg, #111, #000);
+            border: 2px solid var(--gold); border-radius: 25px;
+            padding: 30px 20px; width: 100%; margin: 20px 0; position: relative;
+        }
+        .prize-card::after { content: '★ ★ ★'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 10px; color: var(--gold); font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
+    <div class="ambient-light"></div>
+    <div class="ambient-light-2"></div>
 
-    <div id="screen-intro" class="screen" style="display: flex;">
-        <h1>The Long Road</h1>
-        <p>I'm out here working, but I miss you and the crew like crazy. It's too quiet without the kids and the cats.</p>
-        <p>Happy Birthday, Yani. Beat these levels to unlock your prize.</p>
-        <button class="btn" onclick="nextLevel('screen-sonic')">Start Quest</button>
-    </div>
-
-    <div id="screen-sonic" class="screen">
-        <h1>01: The Escape</h1>
-        <p>Sonic is trying to bolt. Keep him inside for 10 seconds!</p>
-        <div class="game-area" id="area"><div id="sonic" onclick="resetSonic()">🐈</div></div>
-        <div id="timer" style="color:var(--gold); font-weight:bold; margin-top:10px;">10s</div>
-    </div>
-
-    <div id="screen-uncle" class="screen">
-        <h1>02: The Greed Sensor</h1>
-        <div id="uncle-face">🤡</div>
-        <p>Warning: Greedy Uncle detected. He's sniffing around for the family money again.</p>
-        <p style="font-style: italic; color: var(--danger);">"Is there an inheritance? What about the estate?!"</p>
-        <button class="btn btn-danger" onclick="alert('Uncle: *Cries in broke*'); nextLevel('screen-alcohol')">Tell him to get a job</button>
-        <button class="btn btn-danger" onclick="alert('Uncle: *Offended*'); nextLevel('screen-alcohol')">Remind him he's not in the will</button>
-    </div>
-
-    <div id="screen-alcohol" class="screen">
-        <h1>03: Social Choice</h1>
-        <p>What is the best drink for a peaceful night?</p>
-        <button class="btn btn-outline" onclick="showLecture()">VODKA</button>
-        <button class="btn btn-outline" onclick="showLecture()">BEER / WINE</button>
-        <button class="btn btn-outline" onclick="showLecture()">BOURBON</button>
-        <button class="btn" onclick="nextLevel('screen-fossils')">WATER (The only right answer)</button>
-    </div>
-
-    <div id="screen-lecture" class="screen">
-        <h1>Correct Answer</h1>
-        <p style="color: var(--gold); font-weight: 800;">NONE.</p>
-        <p>Alcohol causes fights. The only way to a quiet life is a cold water and a clear head.</p>
-        <button class="btn" onclick="nextLevel('screen-fossils')">I Understand</button>
-    </div>
-
-    <div id="screen-fossils" class="screen">
-        <h1>04: Extraction</h1>
-        <p>Dig up those Dragon Eggs from our weekend away.</p>
-        <div class="game-area"><canvas id="dig-canvas" width="300" height="300"></canvas></div>
-    </div>
-
-    <div id="screen-memory" class="screen">
-        <h1>05: Decryption</h1>
-        <p>Match the pairs of what I miss most to unlock the vault.</p>
-        <div class="game-area"><div class="grid" id="memory-grid"></div></div>
-    </div>
-
-    <div id="screen-final" class="screen">
-        <h1>👑 Unlocked</h1>
-        <p>I miss you Yani. Since I can't be there to take the load off, I'm sending a feast.</p>
-        <div style="padding: 20px; border: 2px dashed var(--gold); border-radius: 20px; background: rgba(0,0,0,0.5); width: 100%;">
-            <h2 style="margin: 0; color: var(--gold);">UBER EATS</h2>
-            <p style="font-size: 0.9rem; margin-top: 10px;">Check your phone—your birthday surprise is on its way.</p>
+    <div class="app-container">
+        
+        <div id="screen-intro" class="screen" style="display: flex;">
+            <h1>Birthday Quest</h1>
+            <p>I'm out here in the quiet, missing the beautiful chaos of you, the kids, and those cats.</p>
+            <p>I built this to bring us a little closer today. Unlock your birthday surprise.</p>
+            <button class="btn" onclick="nextLevel('screen-sonic')">Begin Mission</button>
         </div>
-        <p style="font-style: italic; font-size: 0.7rem; margin-top: 20px;">Blue, Mr Grey, Kitkat, Ed & Sonic miss you.<br>I'll be home soon. I love you.</p>
+
+        <div id="screen-sonic" class="screen">
+            <h1>01: The Escape</h1>
+            <p>Sonic is bolting again. Keep the runner inside for 12 seconds!</p>
+            <div class="canvas-wrapper" id="area"><div id="sonic" onclick="resetSonic()">🐈</div></div>
+            <div id="timer" style="color:var(--gold); font-size:1.5rem; margin-top:15px; font-weight:800;">12s</div>
+        </div>
+
+        <div id="screen-uncle" class="screen">
+            <div style="font-size: 80px; margin-bottom: 10px; animation: bounce 2s infinite;">🤡</div>
+            <h1>02: The Greed Sensor</h1>
+            <p>Greedy Uncle detected. He's asking about the estate and inheritance again.</p>
+            <button class="btn" style="background:#ff4d4d; color:#fff;" onclick="alert('Uncle: *Crying because he is broke*'); nextLevel('screen-alcohol')">Tell him to get a job</button>
+            <button class="btn" style="background:#ff4d4d; color:#fff;" onclick="alert('Uncle: *Realises he is not in the will*'); nextLevel('screen-alcohol')">Remind him he gets $0</button>
+        </div>
+
+        <div id="screen-alcohol" class="screen">
+            <h1>03: Nightcap</h1>
+            <p>What's the best drink to settle in with?</p>
+            <button class="btn btn-outline" onclick="showLecture()">VODKA</button>
+            <button class="btn btn-outline" onclick="showLecture()">BEER / WINE</button>
+            <button class="btn btn-outline" onclick="showLecture()">BOURBON</button>
+            <button class="btn btn-outline" onclick="showLecture()">CHAMPAGNE</button>
+        </div>
+
+        <div id="screen-lecture" class="screen">
+            <h1 style="color:#ff4d4d;">❌ Incorrect</h1>
+            <p style="font-weight: 800; font-size: 1.2rem; color: var(--gold);">The Correct Answer is NONE.</p>
+            <p>Alcohol causes fights and makes life harder. The only real answer is a clear head and a peaceful night.</p>
+            <button class="btn" onclick="nextLevel('screen-fossils')">I Understand</button>
+        </div>
+
+        <div id="screen-fossils" class="screen">
+            <h1>04: The Excavation</h1>
+            <p>Dig up the Dragon Eggs from our weekend away.</p>
+            <div class="canvas-wrapper"><canvas id="dig-canvas" width="320" height="320"></canvas></div>
+        </div>
+
+        <div id="screen-memory" class="screen">
+            <h1>05: Encryption</h1>
+            <p>Match the pairs of what I miss most to unlock the final vault.</p>
+            <div class="canvas-wrapper"><div class="memory-grid" id="memory-grid"></div></div>
+        </div>
+
+        <div id="screen-final" class="screen">
+            <h1>👑 Quest Complete</h1>
+            <p>I miss you, Yani. I miss the kids and I even miss the cats.</p>
+            <div class="prize-card">
+                <h2 style="margin: 0; color: var(--gold); letter-spacing: 5px;">UBER EATS</h2>
+                <p style="font-size: 0.9rem; margin: 15px 0 0;">Check your phone—a birthday feast is currently being prepared for you.</p>
+            </div>
+            <p style="font-style: italic; font-size: 0.8rem; margin-top: 20px;">Blue, Mr Grey, Kitkat, Ed & Sonic are lucky to have you.<br>I love you. See you soon.</p>
+        </div>
+
     </div>
 
     <script>
-        let sonicPos = 0, timeLeft = 10;
+        let sonicPos = 0, timeLeft = 12;
 
         function nextLevel(id) {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
@@ -147,8 +168,10 @@
         function startSonicGame() {
             const sonic = document.getElementById('sonic'), area = document.getElementById('area');
             const interval = setInterval(() => {
-                sonicPos += 15; sonic.style.left = sonicPos + 'px';
-                if (sonicPos > (area.clientWidth - 60)) { sonicPos = 0; timeLeft = 10; alert("Sonic escaped!"); }
+                sonicPos += 16; sonic.style.left = sonicPos + 'px';
+                if (sonicPos > (area.clientWidth - 65)) { 
+                    sonicPos = 0; timeLeft = 12; alert("Sonic escaped! Resetting..."); 
+                }
             }, 100);
             const timerInt = setInterval(() => {
                 timeLeft--; document.getElementById('timer').innerText = timeLeft + "s";
@@ -158,14 +181,14 @@
 
         function startFossilDig() {
             const canvas = document.getElementById('dig-canvas'), ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#221a00'; ctx.fillRect(0, 0, 300, 300);
+            ctx.fillStyle = '#221a00'; ctx.fillRect(0, 0, 320, 320);
             ctx.globalCompositeOperation = 'destination-out';
             let count = 0;
             const dig = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
                 const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-                ctx.beginPath(); ctx.arc(x * (300/rect.width), y * (300/rect.height), 30, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x * (320/rect.width), y * (320/rect.height), 35, 0, Math.PI * 2); ctx.fill();
                 count++; if(count > 100) nextLevel('screen-memory');
             };
             canvas.addEventListener('touchmove', dig);
