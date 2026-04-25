@@ -21,7 +21,6 @@
             height: 100vh; width: 100vw; overflow: hidden;
         }
 
-        /* High-End Background */
         .ambient-light { position: fixed; width: 400px; height: 400px; background: radial-gradient(circle, #001f3f 0%, transparent 70%); top: -10%; right: -10%; filter: blur(60px); z-index: -1; opacity: 0.6; }
         .ambient-light-2 { position: fixed; width: 300px; height: 300px; background: radial-gradient(circle, #221a00 0%, transparent 70%); bottom: -5%; left: -5%; filter: blur(60px); z-index: -1; opacity: 0.4; }
 
@@ -45,7 +44,6 @@
         h1 { font-size: 1.6rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin: 0 0 15px; text-shadow: 0 0 15px rgba(255,215,0,0.3); }
         p { font-size: 1rem; color: #d1d1d1; line-height: 1.6; margin-bottom: 25px; font-weight: 300; }
 
-        /* Game Mechanics */
         .canvas-wrapper { 
             width: 100%; aspect-ratio: 1/1; border: 1px solid var(--border);
             border-radius: 25px; background: rgba(0,0,0,0.4); position: relative; overflow: hidden;
@@ -61,19 +59,16 @@
         .btn-outline { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold); margin: 6px 0; }
         .btn:active { transform: scale(0.95); filter: brightness(0.8); }
 
-        /* Sonic Styling */
-        #sonic { font-size: 65px; position: absolute; transition: left 0.12s linear; drop-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        #sonic { font-size: 65px; position: absolute; transition: left 0.12s linear; }
 
-        /* Memory Puzzle */
         .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; height: 100%; padding: 15px; }
         .card { 
             background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; 
             align-items: center; justify-content: center; font-size: 1.5rem; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.4s; border: 1px solid rgba(255,255,255,0.1);
         }
         .card.flipped { background: var(--gold); color: #000; transform: rotateY(180deg); }
 
-        /* Prize Card */
         .prize-card {
             background: linear-gradient(145deg, #111, #000);
             border: 2px solid var(--gold); border-radius: 25px;
@@ -91,7 +86,7 @@
         
         <div id="screen-intro" class="screen" style="display: flex;">
             <h1>Birthday Quest</h1>
-            <p>I'm out here in the quiet, missing the beautiful chaos of you, the kids, and those cats.</p>
+            <p>I'm out here in the quiet, missing the beautiful chaos of you, the kids, and even the mutt.</p>
             <p>I built this to bring us a little closer today. Unlock your birthday surprise.</p>
             <button class="btn" onclick="nextLevel('screen-sonic')">Begin Mission</button>
         </div>
@@ -99,7 +94,7 @@
         <div id="screen-sonic" class="screen">
             <h1>01: The Escape</h1>
             <p>Sonic is bolting again. Keep the runner inside for 12 seconds!</p>
-            <div class="canvas-wrapper" id="area"><div id="sonic" onclick="resetSonic()">🐈</div></div>
+            <div class="canvas-wrapper" id="area"><div id="sonic" onclick="resetSonic()">🐕</div></div>
             <div id="timer" style="color:var(--gold); font-size:1.5rem; margin-top:15px; font-weight:800;">12s</div>
         </div>
 
@@ -141,12 +136,12 @@
 
         <div id="screen-final" class="screen">
             <h1>👑 Quest Complete</h1>
-            <p>I miss you, Yani. I miss the kids and I even miss the cats.</p>
+            <p>I miss you, Yani. I miss the kids and I even miss the mutt.</p>
             <div class="prize-card">
                 <h2 style="margin: 0; color: var(--gold); letter-spacing: 5px;">UBER EATS</h2>
                 <p style="font-size: 0.9rem; margin: 15px 0 0;">Check your phone—a birthday feast is currently being prepared for you.</p>
             </div>
-            <p style="font-style: italic; font-size: 0.8rem; margin-top: 20px;">Blue, Mr Grey, Kitkat, Ed & Sonic are lucky to have you.<br>I love you. See you soon.</p>
+            <p style="font-size: 1.1rem; margin-top: 20px; color: var(--gold); font-weight: bold;">Happy Birthday. I love you.</p>
         </div>
 
     </div>
@@ -169,9 +164,7 @@
             const sonic = document.getElementById('sonic'), area = document.getElementById('area');
             const interval = setInterval(() => {
                 sonicPos += 16; sonic.style.left = sonicPos + 'px';
-                if (sonicPos > (area.clientWidth - 65)) { 
-                    sonicPos = 0; timeLeft = 12; alert("Sonic escaped! Resetting..."); 
-                }
+                if (sonicPos > (area.clientWidth - 65)) { sonicPos = 0; timeLeft = 12; alert("Sonic escaped!"); }
             }, 100);
             const timerInt = setInterval(() => {
                 timeLeft--; document.getElementById('timer').innerText = timeLeft + "s";
@@ -195,7 +188,8 @@
         }
 
         function startMemoryGame() {
-            const symbols = ['🐈', '👦', '👧', '🐉', '🐈', '👦', '👧', '🐉', '👑', '🍔', '👑', '🍔'];
+            // Updated symbols for Yani, the Boys, the Dogs, and a Steak
+            const symbols = ['🐕', '👦', '👑', '🥩', '👦', '🐕', '👦', '🐕', '👑', '🥩', '👦', '🐕'];
             const grid = document.getElementById('memory-grid'); grid.innerHTML = '';
             symbols.sort(() => Math.random() - 0.5);
             let flipped = [], matched = 0;
