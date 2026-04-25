@@ -4,7 +4,7 @@
     <title>Yanis's Birthday Adventure</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
-        /* Mobile Setup */
+        /* Mobile Reset & Layout */
         * { box-sizing: border-box; touch-action: manipulation; }
         body { 
             background: linear-gradient(135deg, #001f3f 0%, #000b1a 100%); 
@@ -17,7 +17,154 @@
             display: none; padding: 20px; width: 100%; height: 100%; 
             flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
-        .active { display: flex; }
 
         h1 { font-size: 2.2rem; margin: 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        p { font-size: 1.1rem; color: #fff; margin-bottom: 2
+        p { font-size: 1.1rem; color: #fff; margin-bottom: 20px; padding: 0 10px; }
+
+        /* Responsive Game Areas */
+        .game-container { 
+            width: 85vw; height: 85vw; max-width: 320px; max-height: 320px;
+            border: 4px solid #FFD700; position: relative; border-radius: 20px;
+            background: rgba(255,255,255,0.05); overflow: hidden;
+        }
+
+        button { 
+            background: #FFD700; color: #001f3f; border: none; padding: 18px 40px; 
+            font-size: 1.3rem; border-radius: 50px; font-weight: bold; width: 80%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        #sonic { font-size: 60px; position: absolute; top: 35%; left: 0; z-index: 10; }
+        canvas { width: 100% !important; height: 100% !important; touch-action: none; }
+
+        /* Reward Vouchers */
+        .voucher { 
+            background: #fff; color: #333; padding: 15px; border-radius: 10px; 
+            margin: 8px 0; width: 90%; font-weight: bold; border-left: 8px solid #FFD700; text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="screen-intro" class="screen">
+        <h1>👑 For Yani</h1>
+        <p>A little birthday escape from the chaos.<br>I've always got your back.</p>
+        <button onclick="nextLevel('screen-sonic')">Start Adventure</button>
+    </div>
+
+    <div id="screen-sonic" class="screen">
+        <h1>Level 1: Sonic!</h1>
+        <p>Tap Sonic to keep him inside!<br>Don't let him escape the box.</p>
+        <div class="game-container" id="area">
+            <div id="sonic" onclick="resetSonic()">🐈</div>
+        </div>
+        <h2 id="timer">Stay in: 10s</h2>
+    </div>
+
+    <div id="screen-fossils" class="screen">
+        <h1>Level 2: Treasures</h1>
+        <p>Rub the screen to find the<br>Dragon Eggs from our weekend away!</p>
+        <div class="game-container">
+            <canvas id="dig-canvas" width="400" height="400"></canvas>
+        </div>
+        <p>Digging...</p>
+    </div>
+
+    <div id="screen-final" class="screen">
+        <h1>❤️ You Win!</h1>
+        <div class="voucher">🎫 Night off from kid showers</div>
+        <div class="voucher">🎫 Teeth brushing duty: DONE</div>
+        <div class="voucher">🎫 Cold drink & Murder Doco</div>
+        <div class="voucher">🎫 1x "Quiet House" pass</div>
+        <p style="margin-top:20px; font-style: italic;">Happy Birthday, Yani!</p>
+    </div>
+
+    <script>
+        // Start the app as soon as the page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            nextLevel('screen-intro');
+        });
+
+        let sonicPos = 0;
+        let timeLeft = 10;
+        let gameActive = false;
+
+        function nextLevel(id) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => s.style.display = 'none');
+            
+            // Show the target screen
+            const target = document.getElementById(id);
+            target.style.display = 'flex';
+            
+            if(id === 'screen-sonic') startSonicGame();
+            if(id === 'screen-fossils') startFossilDig();
+        }
+
+        function resetSonic() { 
+            sonicPos = 0; 
+        }
+
+        function startSonicGame() {
+            const sonic = document.getElementById('sonic');
+            const area = document.getElementById('area');
+            
+            const interval = setInterval(() => {
+                const limit = area.clientWidth - 70;
+                sonicPos += 10; 
+                sonic.style.left = sonicPos + 'px';
+                
+                if (sonicPos > limit) { 
+                    sonicPos = 0; 
+                    timeLeft = 10; 
+                    alert("Sonic escaped! Get him back in the house!"); 
+                }
+            }, 100);
+
+            const timerInt = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = "Stay in: " + timeLeft + "s";
+                if(timeLeft <= 0) {
+                    clearInterval(interval);
+                    clearInterval(timerInt);
+                    nextLevel('screen-fossils');
+                }
+            }, 1000);
+        }
+
+        function startFossilDig() {
+            const canvas = document.getElementById('dig-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Fill with brown "dirt"
+            ctx.fillStyle = '#5d4037';
+            ctx.fillRect(0, 0, 400, 400);
+            
+            // Set up the "erasing" effect
+            ctx.globalCompositeOperation = 'destination-out';
+
+            let count = 0;
+            const dig = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+                
+                ctx.beginPath();
+                // Scale coordinates for the canvas size
+                ctx.arc(x * (400/rect.width), y * (400/rect.height), 35, 0, Math.PI * 2);
+                ctx.fill();
+                
+                count++;
+                if(count > 80) {
+                    canvas.removeEventListener('touchmove', dig);
+                    setTimeout(() => nextLevel('screen-final'), 500);
+                }
+            };
+            
+            canvas.addEventListener('touchmove', dig);
+            canvas.addEventListener('mousemove', dig);
+        }
+    </script>
+</body>
+</html>
